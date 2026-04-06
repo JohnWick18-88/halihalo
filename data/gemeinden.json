@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "schlnr": "14511000",
+    "gemeinde": "Dresden",
+    "landkreis": "Kreisfreie Stadt Dresden",
+    "bundesland": "Sachsen",
+    "plz": "01067",
+    "ortsteile": "",
+    "telefon": "",
+    "fax": "",
+    "email": "",
+    "homepage": "",
+    "bm_name": "",
+    "bm_titel": "",
+    "bm_status": "hauptamtlich",
+    "regionalplan": "RP Dresden-Oberlausitz",
+    "fnp": "",
+    "bplan": "",
+    "energiekonzept": "",
+    "konflikte": "",
+    "wichtig": "",
+    "bearb_stand": "",
+    "_info": "PLATZHALTER — Ersetze diese Datei mit dem echten Gemeindeindex (aus Gemeindeverzeichnis_Sachsen.xlsx konvertiert). Die App erwartet ein JSON-Array mit diesen Feldnamen. Nutze das Python-Script data/convert_xlsx.py um die Excel-Datei zu konvertieren."
+  }
+]
