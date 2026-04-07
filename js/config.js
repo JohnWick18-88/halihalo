@@ -21,7 +21,7 @@ const CONFIG = {
         base: 'https://luis.sachsen.de/arcgis/rest/services',
         // FeatureServer Endpoints (echte Vektordaten — für Verschneidungen)
         featureServer: {
-            // Basis & Verwaltung
+            // ---- G01: Basis & Verwaltung ----
             flurstuecke:        '/Arbeitslayer/flurstueck_sachsen/FeatureServer/0',
             flurstueckNummern:  '/Arbeitslayer/flurstueck_sachsen/FeatureServer/1',
             gemarkungen:        '/Arbeitslayer/flurstueck_sachsen/FeatureServer/2',
@@ -29,61 +29,157 @@ const CONFIG = {
             kreisgrenzen:       '/contentSABE/verwaltungsgrenzen/FeatureServer/1',
             landesgrenze:       '/contentSABE/verwaltungsgrenzen/FeatureServer/2',
 
-            // Naturschutz — PFLICHT
+            // ---- G02: PV-Kulisse & EEG-Korridore ----
+            pvfvo:              '/ee_solar/pv_freiflaeche/FeatureServer/0',
+
+            // ---- G03: Harte Schutzkonflikte Natur ----
             nsg:                '/natur/gesetz_gesch_biotope/FeatureServer/0',
             lsg:                '/natur/gesetz_gesch_biotope/FeatureServer/1',
-            ffh:                '/natur/natura2000/FeatureServer/0',
-            spa:                '/natur/natura2000/FeatureServer/1',
             biosphaerenreservat:'/natur/gesetz_gesch_biotope/FeatureServer/2',
             nationalpark:       '/natur/gesetz_gesch_biotope/FeatureServer/3',
             geschBiotope:       '/natur/gesetz_gesch_biotope/FeatureServer/4',
+            naturpark:          '/natur/gesetz_gesch_biotope/FeatureServer/5',
+            fnd:                '/natur/gesetz_gesch_biotope/FeatureServer/6',
 
-            // PV-Screening
-            pvfvo:              '/ee_solar/pv_freiflaeche/FeatureServer/0',
+            // ---- G04: Natura 2000 & Artenschutz ----
+            ffh:                '/natur/natura2000/FeatureServer/0',
+            spa:                '/natur/natura2000/FeatureServer/1',
+            ffhFledermaus:      '/natur/natura2000/FeatureServer/2',
 
-            // Wasser
+            // ---- G05: Biotope & Habitate (ISSAND / BTLNK) ----
+            btpvzFlaechen:      '/natur/gesetz_gesch_biotope/FeatureServer/4',  // Biotopflächen §30
+            btpvzLinien:        '/natur/gesetz_gesch_biotope/FeatureServer/7',
+            btpvzPunkte:        '/natur/gesetz_gesch_biotope/FeatureServer/8',
+            issandBiotopePunkte:'/natur/issand/FeatureServer/0',
+            issandBiotopeLinien:'/natur/issand/FeatureServer/1',
+            issandBiotopeFlaechen:'/natur/issand/FeatureServer/2',
+            issandHabitatePunkte: '/natur/issand/FeatureServer/3',
+            issandHabitateLinien: '/natur/issand/FeatureServer/4',
+            issandHabitateFlaechen:'/natur/issand/FeatureServer/5',
+            issandLrtPunkte:    '/natur/issand/FeatureServer/6',
+            issandLrtLinien:    '/natur/issand/FeatureServer/7',
+            issandLrtFlaechen:  '/natur/issand/FeatureServer/8',
+            btlnkFlaechen:      '/natur/btlnk/FeatureServer/0',
+            btlnkLinien:        '/natur/btlnk/FeatureServer/1',
+            btlnkPunkte:        '/natur/btlnk/FeatureServer/2',
+            biotopeOffenlandFlaechen: '/natur/biotope_offenland/FeatureServer/0',
+
+            // ---- G07: Wasserschutz ----
             twsg:               '/wasser/trinkwasserschutzgebiete/FeatureServer/0',
+            twsgFliessgewaesser:'/wasser/trinkwasserschutzgebiete/FeatureServer/1',
+            twsgTalsperren:     '/wasser/trinkwasserschutzgebiete/FeatureServer/2',
+            heilquellen:        '/wasser/trinkwasserschutzgebiete/FeatureServer/3',
 
-            // Energie (WEA)
+            // ---- G08: Auen, Moore & Feuchtgebiete ----
+            auenMoore:          '/natur/auen_moore/FeatureServer/0',
+            mooreGloez:         '/natur/moore_gloez/FeatureServer/0',
+            mooreErfassung:     '/natur/moore_erfassung/FeatureServer/0',
+            torfmaechtigk:      '/boden/simon/FeatureServer/1',
+
+            // ---- G09: Bodenqualität & Landwirtschaft ----
+            bodenschaetzung:    '/boden/bodenschaetzung/FeatureServer/0',
+            bk50:               '/boden/bodenkarte/FeatureServer/0',
+            bodenfunktionen:    '/boden/bodenfunktionen/FeatureServer/0',
+            bodenfruchtbarkeit: '/boden/bodenfunktionen/FeatureServer/1',
+            agrarstruktur:      '/boden/agrarstruktur/FeatureServer/0',
+            nitrat:             '/boden/nitrat/FeatureServer/0',
+            trockengebiete:     '/boden/nitrat/FeatureServer/1',
+
+            // ---- G10: Bodenfunktionen & Erosion (Detail) ----
+            bodenkennwerte:     '/boden/bodenkennwerte/FeatureServer/0',
+            bodenempfindl:      '/boden/bodenempfindlichkeit/FeatureServer/0',
+            verdichtungsempf:   '/boden/verdichtungsempfindlichkeit/FeatureServer/0',
+
+            // ---- G16: Energieinfrastruktur (LUIS) ----
             weaBetrieb:         '/ee_wind/wea_sachsen/FeatureServer/0',
             weaGenehmigung:     '/ee_wind/wea_sachsen/FeatureServer/1',
             weaVorInbetrieb:    '/ee_wind/wea_sachsen/FeatureServer/2',
+            pvAnlagen:          '/ee_solar/pv_anlagen/FeatureServer/0',
 
-            // Boden
-            bodenschaetzung:    '/boden/bodenschaetzung/FeatureServer/0',
-            bodenfunktionen:    '/boden/bodenfunktionen/FeatureServer/0',
-
-            // Auen/Moore
-            auenMoore:          '/natur/auen_moore/FeatureServer/0',
-
-            // IED / Industrie
+            // ---- G18: Industrie & Emissionen (LUIS) ----
             ied:                '/umwelt/ied_anlagen/FeatureServer/0',
-            biogas:             '/ee_biogas/biogasanlagen/FeatureServer/0'
+            biogas:             '/ee_biogas/biogasanlagen/FeatureServer/0',
+            anlagenbestand:     '/umwelt/anlagenbestand/FeatureServer/0',
+            tierhaltung:        '/umwelt/tierhaltung/FeatureServer/0',
+            stoerfall:          '/umwelt/stoerfall/FeatureServer/0'
         },
 
-        // MapServer Endpoints (Rasterbilder — nur Visualisierung)
+        // MapServer Endpoints (Rasterbilder — nur Visualisierung, kein Verschneiden)
         mapServer: {
             eegKorridor:        '/ee_solar/eeg_korridor/MapServer',
-            hochwasser:         '/wasser/hochwasser/MapServer',
+            hochwasserHQ100:    '/wasser/hochwasser/MapServer',           // Layer 0 = HQ100
+            hochwasserHQ20:     '/wasser/hochwasser/MapServer',           // Layer 1 = HQ20/25
+            hochwasserHQ50:     '/wasser/hochwasser/MapServer',           // Layer 2 = HQ50
+            hochwasserHQ200:    '/wasser/hochwasser/MapServer',           // Layer 3 = HQ200/300
+            hochwasserExtrem:   '/wasser/hochwasser/MapServer',           // Layer 4 = HQextrem
             laerm:              '/umwelt/laermkartierung/MapServer',
             bodenversiegelung:  '/boden/bodenversiegelung/MapServer',
-            altlasten:          '/umwelt/salka/MapServer'
+            altlasten:          '/umwelt/salka/MapServer',
+            erosion:            '/boden/erosion/MapServer',
+            hochspannung:       '/ee_strom/hochspannungsnetz/MapServer'   // Sachsen Hochspannungsnetz
         }
     },
 
-    // ---- RAPIS Sachsen MapServer ----
+    // ---- RAPIS Sachsen WMS ----
+    // Basis: https://rfrp.rapis-ipm-gis.de/rapis
+    // WICHTIG: RAPIS-Endpunkte müssen ggf. gegen die RAPIS-Capabilities verifiziert werden.
+    // WMS Capabilities: https://rfrp.rapis-ipm-gis.de/rapis/wms/[DIENST]?SERVICE=WMS&REQUEST=GetCapabilities
     rapis: {
         base: 'https://rfrp.rapis-ipm-gis.de/rapis',
         wms: {
+            // ---- G11: Regionalplanung ----
             verwaltungsgrenzen: '/wms/RO_Verwaltungsgrenzen',
             bauleitplanung:     '/wms/RO_Bauleitplanung',
-            regionalplan_ces:   '/wms/RP_CES',
-            regionalplan_ddn:   '/wms/RP_DDN',
-            regionalplan_lei:   '/wms/RP_LEI',
-            regionalplan_swn:   '/wms/RP_SWN',
+            regionalplan_ces:   '/wms/RP_CES',    // Chemnitz-Erzgebirge-SW
+            regionalplan_ddn:   '/wms/RP_DDN',    // Dresden-Oberlausitz
+            regionalplan_lei:   '/wms/RP_LEI',    // Leipzig-Westsachsen
+            regionalplan_swn:   '/wms/RP_SWN',    // Süd-Westsachsen
             flaechennutzung:    '/wms/RO_Flaechennutzungsplan',
             raumordnung:        '/wms/RO_Raumordnung',
-            crossdata:          '/wms/CROSSDATA'
+            crossdata:          '/wms/CROSSDATA',
+
+            // ---- G12: Bauleitplanung (RAPIS) ----
+            bplan_kraft:        '/wms/RO_Bauleitplanung',
+            fnp_wirksam:        '/wms/RO_Flaechennutzungsplan',
+
+            // ---- G13: Bergbau & Untergrund (NUR RAPIS) ----
+            bergbau:            '/wms/G13_Bergbau',
+            // Sub-Layer via wmsLayers-Parameter: Bergbauberechtigungen, Baubeschraenkung,
+            // Hohlraumkarte, Gruben, Braunkohlenplaene
+
+            // ---- G14: Archäologie & Denkmal (NUR RAPIS) ----
+            archaeologie:       '/wms/G14_Archaeologie',
+            // Sub-Layer: Archaeolog. Relevanzbereiche [!], Denkmalschutzgebiet,
+            // UNESCO Weltkulturerbe [Ausschluss!], Kulturdenkmal
+
+            // ---- G15: Altlasten & Deponien (NUR RAPIS, ergänzt LUIS-SALKA) ----
+            altlasten_rapis:    '/wms/G15_Altlasten',
+            // Sub-Layer: SALKA [35.000 Einträge!], Deponien
+
+            // ---- G16: Energieinfrastruktur (NUR RAPIS) ----
+            energie_rapis:      '/wms/G16_Energie',
+            // Sub-Layer: Mittel-/Hochspannungsleitungen, Umspannwerke >=110kV,
+            // PV-Anlagen >100kW, Kraftwerke >10MW, Gashochdruckleitung,
+            // Energievorhaben Planung Punkt/Fläche
+
+            // ---- G17: Verkehr & Richtfunk (NUR RAPIS) ----
+            verkehr_rapis:      '/wms/G17_Verkehr',
+            // Sub-Layer: Richtfunkstrecken [⚠ kritisch!], Richtfunk Sende-/Empfangsanlagen,
+            // Luftverkehr Baubeschraenkung, Schienennetz, Strassennetz
+
+            // ---- G18: Industrie & Kontext (RAPIS) ----
+            industrie_rapis:    '/wms/G18_Industrie',
+            // Sub-Layer: IED-Anlagen EU, Störfall-VO Betriebsbereiche,
+            // Brachen [NUR RAPIS], GE/GI Industrieflächen, Öffentliche Auslagen
+
+            // ---- Naturschutz-Ergänzungen (NUR RAPIS) ----
+            nsg_planung:        '/wms/RO_Naturschutz',   // NSG/LSG Planung (künftig)
+            glb:                '/wms/RO_Naturschutz',   // GLB §19 SächsNatSchG
+            twsz_rapis:         '/wms/RO_Wasser',        // TWSZ Planung (NUR RAPIS)
+            hw_rapis:           '/wms/RO_Hochwasser',    // Überschwemmungsgebiete §78 WHG
+
+            // ---- Hintergrundkarten ----
+            basemap_grau:       '/wms/DTK250'            // DTK250 Grau (RAPIS-Hintergrund)
         },
         featureServer: {
             verwaltungsgrenzen: '/wfs/RO_Verwaltungsgrenzen'
