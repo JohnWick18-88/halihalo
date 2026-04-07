@@ -657,6 +657,114 @@ body {
     to { transform: rotate(360deg); }
 }
 
+/* ---- Opacity Slider ---- */
+.layer-opacity-row {
+    padding: 2px 16px 6px 36px;
+}
+
+.layer-opacity-row.hidden {
+    display: none;
+}
+
+.opacity-slider {
+    width: 100%;
+    height: 4px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: var(--border-light);
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+}
+
+.opacity-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 12px;
+    height: 12px;
+    background: var(--accent-blue);
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.opacity-slider::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+    background: var(--accent-blue);
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+}
+
+/* ---- Distance Labels ---- */
+.distance-label {
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.dist-badge {
+    display: inline-block;
+    background: rgba(10, 14, 23, 0.9);
+    border: 1px solid var(--border-light);
+    border-radius: 4px;
+    padding: 3px 8px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-primary);
+    text-align: center;
+    line-height: 1.3;
+    white-space: nowrap;
+    pointer-events: none;
+}
+
+.dist-badge small {
+    font-weight: 400;
+    color: var(--text-secondary);
+    font-size: 9px;
+}
+
+.dist-siedlung {
+    border-color: var(--text-muted);
+    color: var(--text-secondary);
+}
+
+/* ---- Dark Tooltip ---- */
+.dark-tooltip {
+    background: var(--bg-secondary) !important;
+    color: var(--text-primary) !important;
+    border: 1px solid var(--border-light) !important;
+    border-radius: var(--radius) !important;
+    box-shadow: 0 4px 12px var(--shadow) !important;
+    font-size: 12px !important;
+    padding: 6px 10px !important;
+}
+
+.dark-tooltip::before {
+    border-top-color: var(--border-light) !important;
+}
+
+/* ---- Heatmap Opacity Control ---- */
+.heatmap-slider-container {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 8px 16px;
+    z-index: 800;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 11px;
+    color: var(--text-secondary);
+}
+
+.heatmap-slider-container input[type="range"] {
+    width: 120px;
+}
+
 /* ---- Responsive ---- */
 @media (max-width: 1200px) {
     .sidebar { width: 280px; }

@@ -19,23 +19,34 @@ const App = {
         // 4. Spatial Tools initialisieren (Kreis, Polygon, Verschneidung)
         SpatialTools.init(map);
 
-        // 5. Sidebar & UI initialisieren
+        // 5. Distance-Modul initialisieren (Entfernungslinien)
+        Distance.init(map);
+
+        // 6. Sidebar & UI initialisieren
         Sidebar.init();
 
-        // 6. Report-Layer laden (Netzausbau etc.)
+        // 7. Report-Layer laden (Netzausbau etc.)
         await Reports.init();
 
-        // 7. LUIS Health-Check
+        // 8. Wiedervorlage initialisieren
+        Wiedervorlage.init();
+
+        // 9. LUIS Health-Check
         this._checkLuisHealth();
 
-        // 8. Status-Farben auf Gemeinden anwenden
+        // 10. Status-Farben auf Gemeinden anwenden
         // (Verzögert, damit Gemeinden erst geladen werden)
         setTimeout(() => {
             Kontakt.applyAllStatusColors();
         }, 3000);
 
-        // 9. Kontakt-Statistik in Statusbar
+        // 11. Kontakt-Statistik in Statusbar
         this._updateStatusBar();
+
+        // 12. Wiedervorlage-Benachrichtigung (nach 2s, damit UI fertig ist)
+        setTimeout(() => {
+            Wiedervorlage.showStartNotification();
+        }, 2000);
 
         console.log("[God's Eye Sachsen] Bereit.");
     },

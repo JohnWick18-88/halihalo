@@ -47,6 +47,10 @@ const Sidebar = {
                         <input type="checkbox" ${layer.active ? 'checked' : ''} data-layer="${layer.id}" />
                         <span class="layer-item-name">${layer.name}</span>
                         <span class="layer-item-type ${typeClass}">${typeLabel}</span>
+                    </div>
+                    <div class="layer-opacity-row ${layer.active ? '' : 'hidden'}" data-opacity-for="${layer.id}">
+                        <input type="range" class="opacity-slider" min="0" max="100" value="70"
+                               data-layer="${layer.id}" title="Transparenz" />
                     </div>`;
             });
 
@@ -97,6 +101,31 @@ const Sidebar = {
 
                 // Gruppen-Zähler aktualisieren
                 this._updateGroupCounts();
+
+                // Opacity-Slider zeigen/verstecken
+                const opacityRow = container.querySelector(`.layer-opacity-row[data-opacity-for="${layerId}"]`);
+                if (opacityRow) opacityRow.classList.toggle('hidden', !active);
+            }
+        });
+
+        // Opacity-Slider
+        container.addEventListener('input', (e) => {
+            if (e.target.classList.contains('opacity-slider')) {
+                const layerId = e.target.dataset.layer;
+                const opacity = e.target.value / 100;
+                const info = LAYER_REGISTRY[layerId];
+                if (!info) return;
+
+                // WMS/MS Layer
+                if (info.leafletLayer && info.leafletLayer.setOpacity) {
+                    info.leafletLayer.setOpacity(opacity);
+                }
+                // FS Layer (GeoJSON)
+                if (GodsEyeMap.featureLayers[layerId]) {
+                    GodsEyeMap.featureLayers[layerId].eachLayer(l => {
+                        if (l.setStyle) l.setStyle({ fillOpacity: opacity * 0.3, opacity: opacity });
+                    });
+                }
             }
         });
 
@@ -165,10 +194,17 @@ const Sidebar = {
         toolPanel.className = 'tool-panel';
         toolPanel.id = 'tool-panel';
         toolPanel.innerHTML = `
+            <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);padding:4px 8px;">Auswahl & Verschneidung</div>
             <button class="tool-btn" data-tool="circle" title="Kreis zeichnen — alle Layer in der Auswahl verschneiden">Kreis-Auswahl</button>
             <button class="tool-btn" data-tool="polygon" title="Polygon zeichnen — freie Auswahl">Polygon-Auswahl</button>
             <button class="tool-btn" data-tool="rectangle" title="Rechteck zeichnen">Rechteck-Auswahl</button>
             <button class="tool-btn" data-tool="clear" title="Auswahl löschen">Auswahl löschen</button>
+            <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);padding:8px 8px 4px;">Analyse</div>
+            <button class="tool-btn" data-tool="heatmap" title="Restriktions-Heatmap: Gemeinden einfärben nach Schutzgebiet-Anteil">Heatmap Restriktionen</button>
+            <button class="tool-btn" data-tool="wiedervorlage" title="Wiedervorlagen anzeigen">Wiedervorlagen</button>
+            <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);padding:8px 8px 4px;">Export</div>
+            <button class="tool-btn" data-tool="export-geojson" title="Verschneidung als GeoJSON exportieren">GeoJSON Export</button>
+            <button class="tool-btn" data-tool="export-kontakte" title="Alle Kontaktdaten exportieren">Kontakte Export</button>
         `;
         document.getElementById('main-container').appendChild(toolPanel);
 
@@ -202,8 +238,22 @@ const Sidebar = {
                     break;
                 case 'clear':
                     SpatialTools.deactivate();
+                    Distance.clearLines();
                     document.getElementById('info-content').innerHTML =
                         '<p class="info-placeholder">Klicke auf eine Gemeinde oder ein Flurstück, um Details zu sehen.</p>';
+                    break;
+                case 'heatmap':
+                    const isActive = Heatmap.toggle(map);
+                    btn.classList.toggle('active', isActive);
+                    break;
+                case 'wiedervorlage':
+                    Wiedervorlage.showFullList();
+                    break;
+                case 'export-geojson':
+                    SpatialTools.exportResults();
+                    break;
+                case 'export-kontakte':
+                    Kontakt.exportData();
                     break;
             }
         });
@@ -233,14 +283,44 @@ const Sidebar = {
             const gemeindeData = Gemeinde.findByName(gemeindeName);
 
             title.textContent = gemeindeName;
+            content.innerHTML = '<div class="loading-spinner"></div><p style="color:var(--text-muted);font-size:12px;text-align:center;margin-top:8px;">Verschneide Layer & berechne Score...</p>';
 
-            // Verschneidungsanalyse starten
-            content.innerHTML = '<div class="loading-spinner"></div><p style="color:var(--text-muted);font-size:12px;text-align:center;margin-top:8px;">Verschneide Layer...</p>';
+            // Auto-Load: Gemarkungen + Flurstücke für diese Gemeinde aktivieren
+            if (!LAYER_REGISTRY['gemarkungen']?.active) {
+                GodsEyeMap.toggleLayer('gemarkungen', true);
+                const checkbox = document.querySelector(`input[data-layer="gemarkungen"]`);
+                if (checkbox) checkbox.checked = true;
+            }
 
-            const restriktionen = await Gemeinde.analyzeRestriktionen(feature);
+            // Parallel: Verschneidung + Entfernungen
+            const [restriktionen, distances] = await Promise.all([
+                Gemeinde.analyzeRestriktionen(feature),
+                Distance.calculateAll(feature, GodsEyeMap.map)
+            ]);
+
+            // Entfernungslinien zeichnen
+            Distance.drawDistanceLines(feature, distances);
 
             if (gemeindeData) {
-                content.innerHTML = Gemeinde.renderSteckbrief(gemeindeData, restriktionen);
+                // Heatmap-Daten falls vorhanden
+                const heatData = Heatmap.getGemeindeData(gemeindeName);
+
+                let html = Gemeinde.renderSteckbrief(gemeindeData, restriktionen);
+
+                // PDF-Export Button einfügen
+                html += `<div class="steckbrief-section">
+                    <button class="btn-primary" style="width:100%"
+                        onclick="PDFExport.exportSteckbrief(
+                            Gemeinde.findByName('${gemeindeName}'),
+                            ${JSON.stringify(restriktionen).replace(/'/g, "\\'")},
+                            null,
+                            ${JSON.stringify(distances).replace(/'/g, "\\'")}
+                        )">
+                        Steckbrief als PDF exportieren
+                    </button>
+                </div>`;
+
+                content.innerHTML = html;
                 this._bindStatusSelector(gemeindeData.gemeinde);
             } else {
                 content.innerHTML = Gemeinde.renderFlurstueckSteckbrief(feature, restriktionen);
@@ -251,22 +331,56 @@ const Sidebar = {
         // Flurstück-Click?
         if (layerInfo.id === 'flurstuecke' || layerInfo.endpoint === 'flurstuecke') {
             title.textContent = `Flurstück ${feature.properties?.FLSTNRZAE || ''}`;
-            content.innerHTML = '<div class="loading-spinner"></div>';
+            content.innerHTML = '<div class="loading-spinner"></div><p style="color:var(--text-muted);font-size:12px;text-align:center;margin-top:8px;">Analysiere Eignung + Entfernungen...</p>';
 
-            // Verschneidung mit Schutzgebieten
-            const verschneidung = {};
-            const verschneidungsLayer = getVerschneidungsLayer().filter(l => l.active);
             const bounds = GodsEyeMap.map.getBounds();
+
+            // Parallel: Verschneidung, Entfernungen, Score
+            const verschneidungsLayer = getVerschneidungsLayer().filter(l => l.active);
+            const verschneidung = {};
+            const overlaps = {};
 
             for (const vl of verschneidungsLayer) {
                 const geojson = await LuisAPI.queryByBounds(vl.endpoint, bounds);
                 if (geojson && geojson.features) {
                     const result = LuisAPI.intersectFeatures(geojson, feature);
                     verschneidung[vl.name] = result.statistics;
+                    // Für Scoring: boolean overlap
+                    overlaps[vl.endpoint || vl.id] = result.statistics.intersectingCount > 0;
                 }
             }
 
-            content.innerHTML = Gemeinde.renderFlurstueckSteckbrief(feature, verschneidung);
+            // Entfernungen berechnen
+            const distances = await Distance.calculateAll(feature, GodsEyeMap.map);
+
+            // Entfernungslinien zeichnen
+            Distance.drawDistanceLines(feature, distances);
+
+            // Eignungs-Score berechnen
+            const scoreResult = Scoring.evaluate(overlaps, distances, feature.properties);
+
+            // Steckbrief + Score + Verschneidung rendern
+            let html = Gemeinde.renderFlurstueckSteckbrief(feature, verschneidung);
+            html += Scoring.renderScoreHTML(scoreResult);
+
+            // PDF-Export Button
+            const gemeindeProp = feature.properties?.GEMEINDE || feature.properties?.gemeinde;
+            const gemeindeData = gemeindeProp ? Gemeinde.findByName(gemeindeProp) : null;
+            if (gemeindeData) {
+                html += `<div class="steckbrief-section">
+                    <button class="btn-primary" style="width:100%"
+                        onclick="PDFExport.exportSteckbrief(
+                            Gemeinde.findByName('${gemeindeProp}'),
+                            ${JSON.stringify(verschneidung).replace(/'/g, "\\'")},
+                            null,
+                            ${JSON.stringify(distances).replace(/'/g, "\\'")}
+                        )">
+                        Steckbrief als PDF exportieren
+                    </button>
+                </div>`;
+            }
+
+            content.innerHTML = html;
             return;
         }
 
