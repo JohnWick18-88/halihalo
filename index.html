@@ -66,6 +66,9 @@
         </aside>
     </div>
 
+    <!-- Toast-Benachrichtigungen (CORS-Fehler, Ladefehler) -->
+    <div id="toast-container" aria-live="polite"></div>
+
     <!-- Status Bar -->
     <footer id="statusbar">
         <span id="status-coords">51.0504&deg;N, 13.7373&deg;E</span>
@@ -75,6 +78,38 @@
     </footer>
 
     <!-- App Modules -->
+    <script>
+    /* ---- Toast-System ---- */
+    const Toast = {
+        _active: [],
+        show(message, hint, type = 'error') {
+            const container = document.getElementById('toast-container');
+            const el = document.createElement('div');
+            el.className = `toast toast-${type}`;
+            el.innerHTML = `
+                <div class="toast-body">
+                    <strong>${message}</strong>
+                    ${hint ? `<div class="toast-hint">${hint}</div>` : ''}
+                </div>
+                <button class="toast-close" title="Schließen">&times;</button>
+            `;
+            el.querySelector('.toast-close').addEventListener('click', () => this._remove(el));
+            container.appendChild(el);
+            this._active.push(el);
+            // Max 5 Toasts
+            if (this._active.length > 5) this._remove(this._active[0]);
+            // Auto-dismiss nach 12s
+            setTimeout(() => this._remove(el), 12000);
+        },
+        _remove(el) {
+            el.classList.add('toast-fade');
+            setTimeout(() => el.remove(), 400);
+            this._active = this._active.filter(e => e !== el);
+        },
+        info(message, hint)    { this.show(message, hint, 'info');    },
+        success(message, hint) { this.show(message, hint, 'success'); }
+    };
+    </script>
     <script src="js/config.js"></script>
     <script src="js/layers.js"></script>
     <script src="js/luis-api.js"></script>

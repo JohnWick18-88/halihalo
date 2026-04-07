@@ -4,6 +4,20 @@
    ============================================ */
 
 const CONFIG = {
+    // ---- Proxy-Modus ----
+    // false = direkte Verbindung (Büro/VPN, CORS muss am Server erlaubt sein)
+    // true  = über lokalen Proxy "node server.js" auf http://localhost:8080
+    //
+    // Wenn Layer nicht laden: Browser-Konsole öffnen (F12).
+    // "CORS"-Fehler → proxy.enabled auf true setzen und server.js starten.
+    // "403 Forbidden"  → VPN / Firmennetzwerk prüfen.
+    // "ERR_NAME_NOT_RESOLVED" → Server nicht erreichbar (kein Internet / VPN).
+    proxy: {
+        enabled: false,
+        luisBase:  '/api/luis',    // Proxy-Pfad wenn enabled: true
+        rapisBase: '/api/rapis'    // Proxy-Pfad wenn enabled: true
+    },
+
     // ---- Map Defaults ----
     map: {
         center: [51.05, 13.35],  // Sachsen Zentrum (ca. Dresden)
