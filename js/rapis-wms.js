@@ -12,12 +12,19 @@ const RapisWMS = {
      * @param {object} layerDef - Layer-Definition aus layers.js
      * @returns {L.TileLayer.WMS}
      */
+    /**
+     * Gibt die RAPIS-Basis-URL zurück (direkt oder via Proxy)
+     */
+    get _rapisBase() {
+        return CONFIG.proxy.enabled ? CONFIG.proxy.rapisBase : CONFIG.rapis.base;
+    },
+
     createLayer(layerId, layerDef) {
         if (this._layers[layerId]) {
             return this._layers[layerId];
         }
 
-        const baseUrl = CONFIG.rapis.base + CONFIG.rapis.wms[layerDef.endpoint];
+        const baseUrl = this._rapisBase + CONFIG.rapis.wms[layerDef.endpoint];
 
         const wmsLayer = L.tileLayer.wms(baseUrl, {
             layers: layerDef.wmsLayers || '0',
@@ -39,12 +46,20 @@ const RapisWMS = {
      * @param {object} layerDef
      * @returns {L.TileLayer.WMS}
      */
+    /**
+     * Gibt die LUIS-Basis-URL zurück (direkt oder via Proxy)
+     */
+    get _luisBase() {
+        return CONFIG.proxy.enabled ? CONFIG.proxy.luisBase : CONFIG.luis.base;
+    },
+
     createLuisMapServerLayer(layerId, layerDef) {
         if (this._layers[layerId]) {
             return this._layers[layerId];
         }
 
-        const baseUrl = CONFIG.luis.base + CONFIG.luis.mapServer[layerDef.endpoint] + '/export';
+        const luisBase = this._luisBase;
+        const baseUrl  = luisBase + CONFIG.luis.mapServer[layerDef.endpoint] + '/export';
 
         // LUIS MapServer als dynamischen Tile-Layer
         const msLayer = L.tileLayer(
@@ -60,7 +75,7 @@ const RapisWMS = {
 
         // Alternative: als WMS (falls MapServer WMS-Schnittstelle hat)
         const wmsLayer = L.tileLayer.wms(
-            CONFIG.luis.base + CONFIG.luis.mapServer[layerDef.endpoint] + '/WMSServer',
+            luisBase + CONFIG.luis.mapServer[layerDef.endpoint] + '/WMSServer',
             {
                 layers: '0',
                 format: 'image/png',

@@ -8,12 +8,54 @@ const LuisAPI = {
     _cache: {},          // endpoint → { bbox, features, timestamp }
     _pending: {},        // endpoint → AbortController
     _retryCount: {},     // endpoint → retry count
+    _errorShown: {},     // endpoint → bool (verhindert Toast-Spam)
+
+    /**
+     * Zeigt eine sichtbare Fehlermeldung im UI (Toast)
+     */
+    _showError(endpoint, err) {
+        if (this._errorShown[endpoint]) return;
+        this._errorShown[endpoint] = true;
+
+        // Nach 30s wieder erlauben
+        setTimeout(() => { delete this._errorShown[endpoint]; }, 30000);
+
+        let msg = '';
+        let hint = '';
+
+        if (err.message && err.message.toLowerCase().includes('cors')) {
+            msg  = `CORS-Fehler: ${endpoint}`;
+            hint = 'Starte node server.js und setze CONFIG.proxy.enabled = true';
+        } else if (err.message && (err.message.includes('403') || err.message.includes('401'))) {
+            msg  = `Zugriff verweigert: ${endpoint} (${err.message})`;
+            hint = 'VPN / Firmennetzwerk prüfen oder Proxy aktivieren';
+        } else if (err.message && err.message.includes('Failed to fetch')) {
+            msg  = `Server nicht erreichbar: ${endpoint}`;
+            hint = 'Internetverbindung / VPN prüfen. Falls OK: node server.js starten';
+        } else {
+            msg  = `Layer-Fehler: ${endpoint} — ${err.message}`;
+            hint = 'Öffne die Browser-Konsole (F12) für Details';
+        }
+
+        Toast.show(msg, hint, 'error');
+
+        // Statusbar updaten
+        const el = document.getElementById('status-connection');
+        if (el) { el.textContent = 'LUIS: Fehler'; el.className = 'status-offline'; }
+    },
+
+    /**
+     * Baut die Basis-URL abhängig vom Proxy-Modus
+     */
+    get _baseUrl() {
+        return CONFIG.proxy.enabled ? CONFIG.proxy.luisBase : CONFIG.luis.base;
+    },
 
     /**
      * Baut die vollständige URL für einen FeatureServer-Endpoint
      */
     buildUrl(endpoint, params) {
-        const url = CONFIG.luis.base + CONFIG.luis.featureServer[endpoint] + '/query';
+        const url = this._baseUrl + CONFIG.luis.featureServer[endpoint] + '/query';
         const searchParams = new URLSearchParams({
             f: 'geojson',
             outFields: '*',
@@ -104,10 +146,18 @@ const LuisAPI = {
             }
 
             console.warn(`[LUIS] Fehler bei ${endpoint}:`, err.message);
+            this._showError(endpoint, err);
 
-            // Retry mit Backoff
+            // Einmal Retry (nicht bei CORS/Auth-Fehlern — die kommen immer wieder)
+            const isCorsOrAuth = err.message && (
+                err.message.includes('403') ||
+                err.message.includes('401') ||
+                err.message.toLowerCase().includes('cors') ||
+                err.message.includes('Failed to fetch')
+            );
+
             const retries = this._retryCount[endpoint] || 0;
-            if (retries < 3) {
+            if (!isCorsOrAuth && retries < 2) {
                 this._retryCount[endpoint] = retries + 1;
                 const delay = Math.pow(2, retries) * 1000;
                 await new Promise(r => setTimeout(r, delay));
