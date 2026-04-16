@@ -62,7 +62,7 @@ function setCors(res) {
 // ---- Proxy-Anfrage weiterleiten ----
 function proxyRequest(req, res, route, reqUrl) {
     const parsedUrl = url.parse(reqUrl);
-    const subPath   = parsedUrl.pathname.slice(route.prefix.length - 1); // ohne /api/xxx prefix
+    const subPath   = parsedUrl.pathname.slice(route.prefix.length); // ohne /api/xxx prefix
     const targetPath = route.targetPath + subPath + (parsedUrl.search || '');
 
     const options = {
