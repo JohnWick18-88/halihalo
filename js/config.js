@@ -86,8 +86,8 @@ const CONFIG = {
 
             // ---- G08: Auen, Moore & Feuchtgebiete ----
             auenMoore:          '/natur/auen_moore/FeatureServer/0',
-            mooreGloez:         '/natur/auen_moore/FeatureServer/1',
-            mooreErfassung:     '/natur/auen_moore/FeatureServer/2',
+            mooreGloez:         '/natur/auen_moore/FeatureServer/0',
+            mooreErfassung:     '/natur/auen_moore/FeatureServer/0',
             torfmaechtigk:      '/boden/bodenkarte/FeatureServer/1',
 
             // ---- G09: Bodenqualität & Landwirtschaft ----
