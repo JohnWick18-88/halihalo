@@ -216,7 +216,8 @@ const GodsEyeMap = {
         const labelGroup = L.layerGroup();
 
         geojson.features.forEach(feature => {
-            const name = feature.properties.GEMEINDE
+            const name = feature.properties.ORTSNAME
+                || feature.properties.GEMEINDE
                 || feature.properties.GEMARKUNG
                 || feature.properties.NAME
                 || feature.properties.name
@@ -289,8 +290,10 @@ const GodsEyeMap = {
         const parts = [];
 
         // Dynamisch die wichtigsten Attribute zeigen
+        if (props.ORTSNAME) parts.push(props.ORTSNAME);
         if (props.GEMEINDE) parts.push(props.GEMEINDE);
         if (props.GEMARKUNG) parts.push(props.GEMARKUNG);
+        if (props.KREIS) parts.push(props.KREIS);
         if (props.FLSTNRZAE) parts.push(`Flst. ${props.FLSTNRZAE}/${props.FLSTNRNEN || ''}`);
         if (props.FLAECHE) parts.push(`${(props.FLAECHE / 10000).toFixed(2)} ha`);
         if (props.NAME) parts.push(props.NAME);
@@ -366,7 +369,7 @@ const GodsEyeMap = {
     async zoomToGemeinde(gemeindeName) {
         const geojson = await LuisAPI.queryByAttribute(
             'gemeindegrenzen',
-            `GEMEINDE = '${gemeindeName}'`
+            `ORTSNAME = '${gemeindeName}'`
         );
         if (geojson && geojson.features && geojson.features.length > 0) {
             const bounds = L.geoJSON(geojson).getBounds();

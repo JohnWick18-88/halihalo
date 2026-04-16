@@ -35,25 +35,25 @@ const CONFIG = {
         base: 'https://luis.sachsen.de/arcgis/rest/services',
         // FeatureServer Endpoints (echte Vektordaten — für Verschneidungen)
         featureServer: {
-            // ---- G01: Basis & Verwaltung ----
-            flurstuecke:        '/Arbeitslayer/flurstueck_sachsen/FeatureServer/0',
-            flurstueckNummern:  '/Arbeitslayer/flurstueck_sachsen/FeatureServer/1',
-            gemarkungen:        '/Arbeitslayer/flurstueck_sachsen/FeatureServer/2',
-            gemeindegrenzen:    '/contentSABE/verwaltungsgrenzen/FeatureServer/0',
-            kreisgrenzen:       '/contentSABE/verwaltungsgrenzen/FeatureServer/1',
-            landesgrenze:       '/contentSABE/verwaltungsgrenzen/FeatureServer/2',
+            // ---- G01: Basis & Verwaltung (basis/grenzen + basis/flurstuecke) ----
+            flurstuecke:        '/basis/flurstuecke/FeatureServer/0',
+            flurstueckNummern:  '/basis/flurstuecke/FeatureServer/1',
+            gemarkungen:        '/basis/flurstuecke/FeatureServer/2',
+            gemeindegrenzen:    '/basis/grenzen/FeatureServer/2',   // Layer 2: Gemeinden
+            kreisgrenzen:       '/basis/grenzen/FeatureServer/1',   // Layer 1: Kreisgrenzen
+            landesgrenze:       '/basis/grenzen/FeatureServer/0',   // Layer 0: Landesgrenze
 
-            // ---- G02: PV-Kulisse & EEG-Korridore ----
-            pvfvo:              '/ee_solar/pv_freiflaeche/FeatureServer/0',
+            // ---- G02: PV-Kulisse ----
+            pvfvo:              '/energie/photovoltaikfreiflaechen/FeatureServer/0',
 
-            // ---- G03: Harte Schutzkonflikte Natur ----
-            nsg:                '/natur/gesetz_gesch_biotope/FeatureServer/0',
-            lsg:                '/natur/gesetz_gesch_biotope/FeatureServer/1',
-            biosphaerenreservat:'/natur/gesetz_gesch_biotope/FeatureServer/2',
-            nationalpark:       '/natur/gesetz_gesch_biotope/FeatureServer/3',
-            geschBiotope:       '/natur/gesetz_gesch_biotope/FeatureServer/4',
-            naturpark:          '/natur/gesetz_gesch_biotope/FeatureServer/5',
-            fnd:                '/natur/gesetz_gesch_biotope/FeatureServer/6',
+            // ---- G03: Harte Schutzkonflikte Natur (natur/schutzgebiete) ----
+            nsg:                '/natur/schutzgebiete/FeatureServer/0',
+            lsg:                '/natur/schutzgebiete/FeatureServer/1',
+            biosphaerenreservat:'/natur/schutzgebiete/FeatureServer/2',
+            nationalpark:       '/natur/schutzgebiete/FeatureServer/3',
+            geschBiotope:       '/natur/gesetz_gesch_biotope/FeatureServer/0',
+            naturpark:          '/natur/schutzgebiete/FeatureServer/4',
+            fnd:                '/natur/schutzgebiete/FeatureServer/5',
 
             // ---- G04: Natura 2000 & Artenschutz ----
             ffh:                '/natur/natura2000/FeatureServer/0',
@@ -61,22 +61,22 @@ const CONFIG = {
             ffhFledermaus:      '/natur/natura2000/FeatureServer/2',
 
             // ---- G05: Biotope & Habitate (ISSAND / BTLNK) ----
-            btpvzFlaechen:      '/natur/gesetz_gesch_biotope/FeatureServer/4',  // Biotopflächen §30
-            btpvzLinien:        '/natur/gesetz_gesch_biotope/FeatureServer/7',
-            btpvzPunkte:        '/natur/gesetz_gesch_biotope/FeatureServer/8',
-            issandBiotopePunkte:'/natur/issand/FeatureServer/0',
-            issandBiotopeLinien:'/natur/issand/FeatureServer/1',
-            issandBiotopeFlaechen:'/natur/issand/FeatureServer/2',
-            issandHabitatePunkte: '/natur/issand/FeatureServer/3',
-            issandHabitateLinien: '/natur/issand/FeatureServer/4',
-            issandHabitateFlaechen:'/natur/issand/FeatureServer/5',
-            issandLrtPunkte:    '/natur/issand/FeatureServer/6',
-            issandLrtLinien:    '/natur/issand/FeatureServer/7',
-            issandLrtFlaechen:  '/natur/issand/FeatureServer/8',
-            btlnkFlaechen:      '/natur/btlnk/FeatureServer/0',
-            btlnkLinien:        '/natur/btlnk/FeatureServer/1',
-            btlnkPunkte:        '/natur/btlnk/FeatureServer/2',
-            biotopeOffenlandFlaechen: '/natur/biotope_offenland/FeatureServer/0',
+            btpvzFlaechen:         '/natur/gesetz_gesch_biotope/FeatureServer/0',
+            btpvzLinien:           '/natur/gesetz_gesch_biotope/FeatureServer/1',
+            btpvzPunkte:           '/natur/gesetz_gesch_biotope/FeatureServer/2',
+            issandBiotopePunkte:   '/natur/issand_biotope/FeatureServer/0',
+            issandBiotopeLinien:   '/natur/issand_biotope/FeatureServer/1',
+            issandBiotopeFlaechen: '/natur/issand_biotope/FeatureServer/2',
+            issandHabitatePunkte:  '/natur/issand_habitate/FeatureServer/0',
+            issandHabitateLinien:  '/natur/issand_habitate/FeatureServer/1',
+            issandHabitateFlaechen:'/natur/issand_habitate/FeatureServer/2',
+            issandLrtPunkte:       '/natur/issand_lebensraumtypen/FeatureServer/0',
+            issandLrtLinien:       '/natur/issand_lebensraumtypen/FeatureServer/1',
+            issandLrtFlaechen:     '/natur/issand_lebensraumtypen/FeatureServer/2',
+            btlnkFlaechen:         '/natur/btlnk/FeatureServer/0',
+            btlnkLinien:           '/natur/btlnk/FeatureServer/1',
+            btlnkPunkte:           '/natur/btlnk/FeatureServer/2',
+            biotopeOffenlandFlaechen: '/natur/biotope_offenland_1994_2008/FeatureServer/0',
 
             // ---- G07: Wasserschutz ----
             twsg:               '/wasser/trinkwasserschutzgebiete/FeatureServer/0',
@@ -86,36 +86,36 @@ const CONFIG = {
 
             // ---- G08: Auen, Moore & Feuchtgebiete ----
             auenMoore:          '/natur/auen_moore/FeatureServer/0',
-            mooreGloez:         '/natur/moore_gloez/FeatureServer/0',
-            mooreErfassung:     '/natur/moore_erfassung/FeatureServer/0',
-            torfmaechtigk:      '/boden/simon/FeatureServer/1',
+            mooreGloez:         '/natur/auen_moore/FeatureServer/1',
+            mooreErfassung:     '/natur/auen_moore/FeatureServer/2',
+            torfmaechtigk:      '/boden/bodenkarte/FeatureServer/1',
 
             // ---- G09: Bodenqualität & Landwirtschaft ----
             bodenschaetzung:    '/boden/bodenschaetzung/FeatureServer/0',
             bk50:               '/boden/bodenkarte/FeatureServer/0',
             bodenfunktionen:    '/boden/bodenfunktionen/FeatureServer/0',
             bodenfruchtbarkeit: '/boden/bodenfunktionen/FeatureServer/1',
-            agrarstruktur:      '/boden/agrarstruktur/FeatureServer/0',
-            nitrat:             '/boden/nitrat/FeatureServer/0',
-            trockengebiete:     '/boden/nitrat/FeatureServer/1',
+            agrarstruktur:      '/landwirtschaft/agrarstruktur/FeatureServer/0',
+            nitrat:             '/landwirtschaft/nitrat/FeatureServer/0',
+            trockengebiete:     '/landwirtschaft/nitrat/FeatureServer/1',
 
-            // ---- G10: Bodenfunktionen & Erosion (Detail) ----
+            // ---- G10: Bodenfunktionen & Erosion ----
             bodenkennwerte:     '/boden/bodenkennwerte/FeatureServer/0',
             bodenempfindl:      '/boden/bodenempfindlichkeit/FeatureServer/0',
             verdichtungsempf:   '/boden/verdichtungsempfindlichkeit/FeatureServer/0',
 
-            // ---- G16: Energieinfrastruktur (LUIS) ----
-            weaBetrieb:         '/ee_wind/wea_sachsen/FeatureServer/0',
-            weaGenehmigung:     '/ee_wind/wea_sachsen/FeatureServer/1',
-            weaVorInbetrieb:    '/ee_wind/wea_sachsen/FeatureServer/2',
-            pvAnlagen:          '/ee_solar/pv_anlagen/FeatureServer/0',
+            // ---- G16: Energieinfrastruktur ----
+            weaBetrieb:         '/energie/wea_wald_kategorien/FeatureServer/0',
+            weaGenehmigung:     '/energie/wea_wald_kategorien/FeatureServer/1',
+            weaVorInbetrieb:    '/energie/wea_wald_kategorien/FeatureServer/2',
+            pvAnlagen:          '/energie/photovoltaikfreiflaechen/FeatureServer/1',
 
-            // ---- G18: Industrie & Emissionen (LUIS) ----
-            ied:                '/umwelt/ied_anlagen/FeatureServer/0',
-            biogas:             '/ee_biogas/biogasanlagen/FeatureServer/0',
-            anlagenbestand:     '/umwelt/anlagenbestand/FeatureServer/0',
-            tierhaltung:        '/umwelt/tierhaltung/FeatureServer/0',
-            stoerfall:          '/umwelt/stoerfall/FeatureServer/0'
+            // ---- G18: Industrie & Emissionen ----
+            ied:                '/laerm/ied_anlagen/FeatureServer/0',
+            biogas:             '/energie/biogas/FeatureServer/0',
+            anlagenbestand:     '/laerm/anlagenbestand/FeatureServer/0',
+            tierhaltung:        '/landwirtschaft/tierhaltung/FeatureServer/0',
+            stoerfall:          '/laerm/stoerfall/FeatureServer/0'
         },
 
         // MapServer Endpoints (Rasterbilder — nur Visualisierung, kein Verschneiden)
