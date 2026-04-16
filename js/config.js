@@ -13,7 +13,7 @@ const CONFIG = {
     // "403 Forbidden"  → VPN / Firmennetzwerk prüfen.
     // "ERR_NAME_NOT_RESOLVED" → Server nicht erreichbar (kein Internet / VPN).
     proxy: {
-        enabled: false,
+        enabled: true,
         luisBase:  '/api/luis',    // Proxy-Pfad wenn enabled: true
         rapisBase: '/api/rapis'    // Proxy-Pfad wenn enabled: true
     },
