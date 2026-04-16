@@ -61,9 +61,9 @@ function setCors(res) {
 
 // ---- Proxy-Anfrage weiterleiten ----
 function proxyRequest(req, res, route, reqUrl) {
-    const parsedUrl = url.parse(reqUrl);
-    const subPath   = parsedUrl.pathname.slice(route.prefix.length); // ohne /api/xxx prefix
-    const targetPath = route.targetPath + subPath + (parsedUrl.search || '');
+    const parsedUrl = new URL(reqUrl, 'http://localhost');
+    const subPath   = parsedUrl.pathname.slice(route.prefix.length);
+    const targetPath = route.targetPath + subPath + parsedUrl.search;
 
     const options = {
         hostname: route.target,
@@ -78,29 +78,33 @@ function proxyRequest(req, res, route, reqUrl) {
     console.log(`[Proxy] ${route.prefix} → https://${route.target}${targetPath}`);
 
     const proxyReq = https.request(options, (proxyRes) => {
+        if (res.headersSent) return;
         setCors(res);
         res.writeHead(proxyRes.statusCode, {
             'Content-Type': proxyRes.headers['content-type'] || 'application/octet-stream'
         });
         proxyRes.pipe(res, { end: true });
+        proxyRes.on('error', () => { if (!res.writableEnded) res.end(); });
     });
 
     proxyReq.on('error', (err) => {
         console.error(`[Proxy] Fehler: ${err.message}`);
+        if (res.headersSent) { if (!res.writableEnded) res.end(); return; }
         setCors(res);
         res.writeHead(502, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({
             error: 'Proxy-Fehler',
             message: err.message,
-            hint: 'Sind Sie mit dem Firmennetzwerk / VPN verbunden?'
+            hint: 'LUIS/RAPIS-Server nicht erreichbar — VPN prüfen'
         }));
     });
 
-    proxyReq.setTimeout(15000, () => {
+    proxyReq.setTimeout(20000, () => {
         proxyReq.destroy();
+        if (res.headersSent) { if (!res.writableEnded) res.end(); return; }
         setCors(res);
         res.writeHead(504, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ error: 'Gateway Timeout', message: 'Server antwortet nicht (15s)' }));
+        res.end(JSON.stringify({ error: 'Gateway Timeout', message: 'LUIS antwortet nicht (20s)' }));
     });
 
     proxyReq.end();
