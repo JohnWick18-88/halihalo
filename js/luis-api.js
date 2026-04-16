@@ -102,6 +102,7 @@ const LuisAPI = {
         const params = {
             geometry: bbox,
             geometryType: 'esriGeometryEnvelope',
+            inSR: 4326,
             spatialRel: 'esriSpatialRelIntersects',
             resultRecordCount: options.maxFeatures || CONFIG.query.maxFeatures,
             ...options
@@ -183,6 +184,7 @@ const LuisAPI = {
                 spatialReference: { wkid: 4326 }
             }),
             geometryType: 'esriGeometryPoint',
+            inSR: 4326,
             spatialRel: 'esriSpatialRelIntersects',
             distance: radiusMeters,
             units: 'esriSRUnit_Meter',
