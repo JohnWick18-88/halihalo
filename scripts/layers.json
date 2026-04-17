@@ -1,0 +1,65 @@
+{
+  "_comment": "Layer-Definitionen aus dem QGIS-Baum 'LUIS Sachsen — PV/BESS Screening'. 'type': 'featureserver' = als Vektor downloadbar. 'type': 'mapserver' = nur Raster, nicht als Vektor herunterladbar. 'restriktion' gibt an, ob der Layer als Ausschluss-/Negativfläche in die Maske einfließt.",
+  "gpkg_name": "sachsen.gpkg",
+  "epsg": 25833,
+  "bbox_25833": [259000, 5568000, 544000, 5823000],
+  "layers": [
+    { "group": "0_basis", "name": "flurstuecke",          "type": "featureserver", "url": "https://luis.sachsen.de/arcgis/rest/services/basis/flurstuecke/FeatureServer/3", "role": "basis" },
+    { "group": "0_basis", "name": "flurstuecke_nr",       "type": "featureserver", "url": "https://luis.sachsen.de/arcgis/rest/services/basis/flurstuecke/FeatureServer/2", "role": "label" },
+    { "group": "0_basis", "name": "gemarkung",            "type": "featureserver", "url": "https://luis.sachsen.de/arcgis/rest/services/basis/flurstuecke/FeatureServer/1", "role": "basis" },
+    { "group": "0_basis", "name": "gemarkungsname",       "type": "featureserver", "url": "https://luis.sachsen.de/arcgis/rest/services/basis/flurstuecke/FeatureServer/0", "role": "label" },
+    { "group": "0_basis", "name": "landesgrenze",         "type": "featureserver", "url": "https://luis.sachsen.de/arcgis/rest/services/basis/grenzen/FeatureServer/0", "role": "basis" },
+    { "group": "0_basis", "name": "kreisgrenzen",         "type": "featureserver", "url": "https://luis.sachsen.de/arcgis/rest/services/basis/grenzen/FeatureServer/1", "role": "basis" },
+    { "group": "0_basis", "name": "gemeinden_luis",       "type": "featureserver", "url": "https://luis.sachsen.de/arcgis/rest/services/basis/grenzen/FeatureServer/2", "role": "basis" },
+    { "group": "0_basis", "name": "gemeinden_rapis",      "type": "featureserver", "url": "https://rapis.ipm-gis.de/arcgis/rest/services/RO_Verwaltungsgrenzen/FeatureServer/5", "role": "basis" },
+    { "group": "0_basis", "name": "adressen",             "type": "featureserver", "url": "https://luis.sachsen.de/arcgis/rest/services/basis/adressen/FeatureServer/0", "role": "basis" },
+
+    { "group": "8_natur", "name": "nsg",                  "type": "featureserver", "url": "https://luis.sachsen.de/arcgis/rest/services/natur/schutzgebiete/FeatureServer/0", "restriktion": "hart",   "thema": "Naturschutz" },
+    { "group": "8_natur", "name": "lsg",                  "type": "featureserver", "url": "https://luis.sachsen.de/arcgis/rest/services/natur/schutzgebiete/FeatureServer/1", "restriktion": "weich",  "thema": "Landschaftsschutz" },
+    { "group": "8_natur", "name": "ffh",                  "type": "featureserver", "url": "https://luis.sachsen.de/arcgis/rest/services/natur/schutzgebiete/FeatureServer/2", "restriktion": "hart",   "thema": "FFH" },
+    { "group": "8_natur", "name": "vsg",                  "type": "featureserver", "url": "https://luis.sachsen.de/arcgis/rest/services/natur/schutzgebiete/FeatureServer/3", "restriktion": "hart",   "thema": "Vogelschutz" },
+    { "group": "8_natur", "name": "nationalpark",         "type": "featureserver", "url": "https://luis.sachsen.de/arcgis/rest/services/natur/schutzgebiete/FeatureServer/4", "restriktion": "hart",   "thema": "Nationalpark" },
+    { "group": "8_natur", "name": "biosphaerenreservat",  "type": "featureserver", "url": "https://luis.sachsen.de/arcgis/rest/services/natur/schutzgebiete/FeatureServer/5", "restriktion": "hart",   "thema": "Biosphärenreservat" },
+    { "group": "8_natur", "name": "biotope_punkte",       "type": "featureserver", "url": "https://luis.sachsen.de/arcgis/rest/services/natur/gesetz_gesch_biotope/FeatureServer/0", "restriktion": "hart", "thema": "Biotop" },
+    { "group": "8_natur", "name": "biotope_linien",       "type": "featureserver", "url": "https://luis.sachsen.de/arcgis/rest/services/natur/gesetz_gesch_biotope/FeatureServer/1", "restriktion": "hart", "thema": "Biotop" },
+    { "group": "8_natur", "name": "biotope_flaechen",     "type": "featureserver", "url": "https://luis.sachsen.de/arcgis/rest/services/natur/gesetz_gesch_biotope/FeatureServer/2", "restriktion": "hart", "thema": "Biotop" },
+    { "group": "8_natur", "name": "natura2000_ffh",       "type": "featureserver", "url": "https://luis.sachsen.de/arcgis/rest/services/natur/natura2000/FeatureServer/1", "restriktion": "hart", "thema": "Natura2000" },
+    { "group": "8_natur", "name": "natura2000_vsg",       "type": "featureserver", "url": "https://luis.sachsen.de/arcgis/rest/services/natur/natura2000/FeatureServer/2", "restriktion": "hart", "thema": "Natura2000" },
+    { "group": "8_natur", "name": "btlnk_flaechen",       "type": "featureserver", "url": "https://luis.sachsen.de/arcgis/rest/services/natur/btlnk/FeatureServer/0", "thema": "Biotoptyp" },
+    { "group": "8_natur", "name": "auen_moore",           "type": "featureserver", "url": "https://luis.sachsen.de/arcgis/rest/services/natur/auen_moore/FeatureServer/0", "restriktion": "hart", "thema": "Aue/Moor" },
+
+    { "group": "9_wasser", "name": "twsg_grundwasser",    "type": "featureserver", "url": "https://luis.sachsen.de/arcgis/rest/services/wasser/wasserschutzgebiete/FeatureServer/0", "restriktion": "hart", "thema": "Trinkwasserschutz" },
+    { "group": "9_wasser", "name": "twsg_fliessgewaesser","type": "featureserver", "url": "https://luis.sachsen.de/arcgis/rest/services/wasser/wasserschutzgebiete/FeatureServer/1", "restriktion": "hart", "thema": "Trinkwasserschutz" },
+    { "group": "9_wasser", "name": "twsg_talsperren",     "type": "featureserver", "url": "https://luis.sachsen.de/arcgis/rest/services/wasser/wasserschutzgebiete/FeatureServer/2", "restriktion": "hart", "thema": "Trinkwasserschutz" },
+    { "group": "9_wasser", "name": "heilquellen",         "type": "featureserver", "url": "https://luis.sachsen.de/arcgis/rest/services/wasser/wasserschutzgebiete/FeatureServer/3", "restriktion": "hart", "thema": "Heilquelle" },
+
+    { "group": "7_luft", "name": "wea_betrieb",           "type": "featureserver", "url": "https://luis.sachsen.de/arcgis/rest/services/luft/wka/FeatureServer/1", "thema": "WEA" },
+    { "group": "7_luft", "name": "wea_vor_inbetrieb",     "type": "featureserver", "url": "https://luis.sachsen.de/arcgis/rest/services/luft/wka/FeatureServer/2", "thema": "WEA" },
+    { "group": "7_luft", "name": "wea_genehmigung",       "type": "featureserver", "url": "https://luis.sachsen.de/arcgis/rest/services/luft/wka/FeatureServer/3", "thema": "WEA" },
+    { "group": "7_luft", "name": "biogasanlagen",         "type": "featureserver", "url": "https://luis.sachsen.de/arcgis/rest/services/luft/biogas_wfs/FeatureServer/0", "thema": "Biogas" },
+    { "group": "7_luft", "name": "anlagenbestand",        "type": "featureserver", "url": "https://luis.sachsen.de/arcgis/rest/services/luft/anlagenbestand_wfs/FeatureServer/0", "thema": "Industrie" },
+    { "group": "7_luft", "name": "ied_anlagen",           "type": "featureserver", "url": "https://luis.sachsen.de/arcgis/rest/services/luft/ie_anlagenbestand_wfs/FeatureServer/0", "restriktion": "weich", "thema": "IED" },
+
+    { "group": "3_energie", "name": "pvfvo_kulisse",      "type": "featureserver", "url": "https://luis.sachsen.de/arcgis/rest/services/energie/photovoltaikfreiflaechen/FeatureServer/0", "thema": "PVFVO" },
+
+    { "group": "2_boden", "name": "bk50_typ",             "type": "featureserver", "url": "https://luis.sachsen.de/arcgis/rest/services/boden/bk50/FeatureServer/0", "thema": "Boden" },
+    { "group": "2_boden", "name": "bodenfruchtbarkeit",   "type": "featureserver", "url": "https://luis.sachsen.de/arcgis/rest/services/boden/bodenfunktionen_bs/FeatureServer/0", "thema": "Bodenfunktion" },
+    { "group": "2_boden", "name": "schutzens_boeden_eeg", "type": "featureserver", "url": "https://luis.sachsen.de/arcgis/rest/services/boden/bodenfunktionen_bs/FeatureServer/5", "restriktion": "weich", "thema": "EEG-Korridor Boden" },
+    { "group": "2_boden", "name": "bodenversiegelung",    "type": "featureserver", "url": "https://luis.sachsen.de/arcgis/rest/services/boden/bodenversiegelung/FeatureServer/0", "thema": "Versiegelung" },
+    { "group": "2_boden", "name": "agrarstruktur",        "type": "featureserver", "url": "https://luis.sachsen.de/arcgis/rest/services/landwirtschaft/agrarstrukturgebiet/FeatureServer/0", "thema": "Landwirtschaft" },
+    { "group": "2_boden", "name": "nitratgebiete",        "type": "featureserver", "url": "https://luis.sachsen.de/arcgis/rest/services/landwirtschaft/nitratgebiete/FeatureServer/0", "thema": "Nitrat" },
+    { "group": "2_boden", "name": "feuchtgebiete_gloez2", "type": "featureserver", "url": "https://luis.sachsen.de/arcgis/rest/services/boden/fk_feuchtgebiete_moore_gloez2/FeatureServer/0", "restriktion": "hart", "thema": "Feuchtgebiet" },
+
+    { "_comment_mapserver": "Die folgenden RAPIS-MapServer liefern nur Raster-Tiles. Sie werden NICHT als Vektor heruntergeladen, sondern im Analyse-QGIS nur als Hintergrund per WMS eingeblendet. Bei Bedarf kann der Download-Skript sie als MBTiles cachen.",
+    "_mapserver_list": [
+      "https://rapis.ipm-gis.de/arcgis/rest/services/RO_Abfall_Altlasten/MapServer",
+      "https://rapis.ipm-gis.de/arcgis/rest/services/RO_Bergbau/MapServer",
+      "https://rapis.ipm-gis.de/arcgis/rest/services/RO_Arch_Denkmal/MapServer",
+      "https://rapis.ipm-gis.de/arcgis/rest/services/RO_Energieversorgung/MapServer",
+      "https://rapis.ipm-gis.de/arcgis/rest/services/RO_BPLAN_in_Kraft/MapServer",
+      "https://rapis.ipm-gis.de/arcgis/rest/services/RO_FNP_wirksam/MapServer",
+      "https://rapis.ipm-gis.de/arcgis/rest/services/RO_Verkehr_Nachrichtentechnik/MapServer",
+      "https://rapis.ipm-gis.de/arcgis/rest/services/PL_BPLAN/MapServer"
+    ] }
+  ]
+}
