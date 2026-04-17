@@ -94,7 +94,10 @@ HART_PATTERNS = [
     'twsg grundwasser',
     'twsg fliessgewaesser', 'twsg fließgewässer',
     'heilquellenschutz',
-    'hochwasser', 'hq100', 'ueberschwemmungsgebiet', 'überschwemmungsgebiet',
+    # 'hochwasser' NICHT als HART-Pattern (würde VBG-Hochwasserschutz fälschlich
+    # als hart flaggen). Spezifisch:
+    'hq100', 'hochwassergefährdung', 'hochwassergefaehrdung',
+    'ueberschwemmungsgebiet', 'überschwemmungsgebiet',
 
     # --- Bergbau hart ------------------------------------------------------
     'baubeschraenkungsgebiet', 'baubeschränkungsgebiet',
