@@ -46,10 +46,11 @@ MODUS = 'DIAGNOSE'   # DIAGNOSE | DEBUG | NUR_HART | AMPEL | RESET | GRUPPIEREN 
 
 SET_CANVAS_WHITE   = True   # weißer Hintergrund in NUR_HART / AMPEL
 HIDE_UNMATCHED     = True   # alle nicht-kategorisierten Layer ausblenden
-BRING_HART_TO_TOP  = True   # HART-Layer in Legende nach oben
+BRING_HART_TO_TOP  = False  # AUS: instabil in manchen QGIS-Versionen (Layer-Verlust)
 GROUPS_EXPANDED    = True   # Ampel-Gruppen aufgeklappt (damit du sie siehst)
 ZOOM_TO_HART       = True   # nach NUR_HART automatisch auf HART-Extent zoomen
 FORCE_PARENT_ON    = True   # alle Parent-Gruppen sichtbarer Layer mit anschalten
+LAYER_COUNT_GUARD  = True   # Abbruch mit Warnung, wenn Layer aus Projekt verschwinden
 VERBOSE            = True
 
 # Farben (R, G, B, A  — 0..255)
@@ -268,13 +269,23 @@ def _set_visible(layer, visible):
 
 
 def _bring_to_top(layer):
-    node = _find_tree_node(layer)
+    """SICHER: fügt zuerst einen neuen Tree-Node am Ziel ein (via addLayer),
+    entfernt erst DANACH den alten. Das alte clone()+remove+insert war
+    in manchen QGIS-Versionen buggy und entfernte den Layer aus dem Projekt."""
+    root = _tree()
+    node = root.findLayer(layer.id())
     if node is None:
         return
     parent = node.parent()
-    clone = node.clone()
+    if parent is root:
+        return  # ist schon oben auf Root-Ebene
+    # 1. neuen Node im Root erzeugen (Layer bleibt registriert)
+    new_node = root.insertLayer(0, layer)
+    if new_node is None:
+        return
+    # 2. alten Node entfernen — Layer bleibt weiter im Projekt,
+    #    weil der neue Node ihn jetzt referenziert
     parent.removeChildNode(node)
-    _tree().insertChildNode(0, clone)
 
 
 def _hard_refresh():
@@ -488,7 +499,11 @@ def _ensure_path(path):
 
 
 def _move_layer_to_group(layer, target_group, remember_origin=True):
-    node = _find_tree_node(layer)
+    """SICHER: fügt einen neuen Tree-Node in der Zielgruppe ein (via
+    addLayer), entfernt erst DANACH den alten Node. Der Layer selbst
+    bleibt die ganze Zeit im QgsProject registriert."""
+    root = _tree()
+    node = root.findLayer(layer.id())
     if node is None:
         return False
     parent = node.parent()
@@ -497,9 +512,14 @@ def _move_layer_to_group(layer, target_group, remember_origin=True):
     if remember_origin:
         orig_path = _node_path(parent) if parent is not None else ''
         layer.setCustomProperty(PROP_ORIG_PARENT, orig_path)
-    clone = node.clone()
-    parent.removeChildNode(node)
-    target_group.addChildNode(clone)
+    # 1. neuen Node in Zielgruppe erzeugen
+    new_node = target_group.addLayer(layer)
+    if new_node is None:
+        # Fallback: Abbruch, lieber nicht verschieben als Layer verlieren
+        return False
+    # 2. alten Node entfernen (Layer bleibt weiter im Projekt)
+    if parent is not None:
+        parent.removeChildNode(node)
     return True
 
 
@@ -868,4 +888,15 @@ if _fn is None:
     print(f'⚠ Unbekannter MODUS: {MODUS!r}')
     print(f'  Erlaubt: {", ".join(_DISPATCH.keys())}')
 else:
+    _count_before = len(QgsProject.instance().mapLayers())
     _fn()
+    _count_after = len(QgsProject.instance().mapLayers())
+    if LAYER_COUNT_GUARD and _count_after < _count_before:
+        print('!' * 70)
+        print(f'🚨 WARNUNG: {_count_before - _count_after} Layer sind aus dem Projekt VERSCHWUNDEN!')
+        print(f'   Vorher: {_count_before} | Nachher: {_count_after}')
+        print('   → Projekt NICHT SPEICHERN! Strg+Shift+O lädt das Projekt neu,')
+        print('     dann sind die Layer wieder da.')
+        print('!' * 70)
+    elif VERBOSE:
+        print(f'  ✓ Layer-Count: {_count_before} → {_count_after} (keine Layer verloren)')
