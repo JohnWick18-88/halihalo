@@ -98,11 +98,51 @@ RESUME = True
 # Max. Zeichen pro Tabellennamen im GPKG
 MAX_NAME_LEN = 60
 
+# ---- Push-Benachrichtigung auf dein Handy ueber ntfy.sh (optional) ----
+#
+# ntfy.sh ist ein kostenloser Push-Dienst ohne Anmeldung.  Du waehlst selbst
+# einen geheimen "Topic-Namen" (wie ein Passwort, z.B. "leven-qgis-export-9f3a")
+# und installierst die ntfy-App auf deinem Handy (Android/iOS, kostenlos im
+# Store).  In der App "Subscribe to topic" mit deinem Namen.
+#
+# Dann bekommst du auf dem Handy Pushes:
+#   * Start
+#   * Alle N Layer ein Fortschritts-Herzschlag
+#   * Abschluss-Statistik (oder Fehler)
+#   * Stoppen die Herzschlaege fuer laenger als erwartet -> QGIS ist gecrasht
+#     oder haengt.
+#
+# NTFY_TOPIC leer lassen = Feature aus.
+NTFY_TOPIC = ""                  # z.B. "leven-qgis-export-9f3a"
+NTFY_SERVER = "https://ntfy.sh"  # Standard-Server, kann selbst gehostet werden
+NTFY_HEARTBEAT_EVERY = 20        # alle N Layer einen Progress-Push senden
+
 # =========================================================================
 
 
 def _ts() -> str:
     return time.strftime("%Y-%m-%d %H:%M:%S")
+
+
+def ntfy_send(msg: str, title: str = "QGIS Export", priority: str = "default") -> None:
+    """Sendet Push an ntfy.sh. Fehler schlucken — kein Grund den Export abzubrechen."""
+    if not NTFY_TOPIC:
+        return
+    try:
+        from urllib import request
+        url = f"{NTFY_SERVER.rstrip('/')}/{NTFY_TOPIC}"
+        req = request.Request(
+            url,
+            data=msg.encode("utf-8"),
+            headers={
+                "Title": title.encode("utf-8").decode("latin-1", "ignore"),
+                "Priority": priority,
+            },
+            method="POST",
+        )
+        request.urlopen(req, timeout=5).read()
+    except Exception:
+        pass
 
 
 class Logger:
@@ -281,11 +321,18 @@ def main():
     logger.log(f"Ziel: {output_dir}")
     logger.log(f"GPKG: {gpkg_path}")
     logger.log(f"Raster-Export: {EXPORT_RASTER}  (Aufloesung: {RASTER_RESOLUTION_M} m)")
+    if NTFY_TOPIC:
+        logger.log(f"Push-Benachrichtigung aktiv: {NTFY_SERVER}/{NTFY_TOPIC}")
     logger.log("=" * 72)
 
     project = QgsProject.instance()
     layers = list(project.mapLayers().values())
     logger.log(f"Gefundene Layer im Projekt: {len(layers)}")
+
+    ntfy_send(
+        f"Export gestartet\n{len(layers)} Layer\nZiel: {output_dir}",
+        title="QGIS Export Start",
+    )
 
     existing_tables = existing_gpkg_tables(gpkg_path) if RESUME else set()
     if existing_tables:
@@ -304,6 +351,15 @@ def main():
         base = sanitize_name(full_name)
 
         logger.log(f"[{i}/{len(layers)}] {full_name}")
+
+        if NTFY_HEARTBEAT_EVERY > 0 and i % NTFY_HEARTBEAT_EVERY == 0:
+            ntfy_send(
+                "Fortschritt {i}/{n}\nVektor OK {vector_ok} / fail {vector_fail}"
+                " | Raster skip {raster_skip}".format(
+                    i=i, n=len(layers), **stats
+                ),
+                title=f"QGIS Export {i}/{len(layers)}",
+            )
 
         if not layer.isValid():
             logger.log("    SKIP (Layer ist ungueltig / Provider nicht verfuegbar)")
@@ -371,16 +427,35 @@ def main():
                 stats["raster_fail"] += 1
 
     logger.log("=" * 72)
-    logger.log(
+    summary = (
         "Fertig. Vektor OK {vector_ok} / fail {vector_fail} / skip {vector_skip}"
-        " | Raster OK {raster_ok} / fail {raster_fail} / skip {raster_skip}".format(**stats)
-    )
+        " | Raster OK {raster_ok} / fail {raster_fail} / skip {raster_skip}"
+    ).format(**stats)
+    logger.log(summary)
     logger.log(f"GPKG:   {gpkg_path}")
     logger.log(f"Raster: {raster_dir}")
     logger.log(f"Log:    {log_path}")
     logger.log("=" * 72)
     logger.close()
 
+    ntfy_send(
+        summary + f"\nGPKG: {gpkg_path}",
+        title="QGIS Export fertig",
+        priority="high",
+    )
+
 
 if __name__ == "__main__" or True:
-    main()
+    try:
+        main()
+    except Exception as _exc:
+        _tb = traceback.format_exc()
+        try:
+            ntfy_send(
+                f"ABBRUCH: {_exc.__class__.__name__}: {_exc}\n\n{_tb[-500:]}",
+                title="QGIS Export FEHLER",
+                priority="urgent",
+            )
+        except Exception:
+            pass
+        raise
