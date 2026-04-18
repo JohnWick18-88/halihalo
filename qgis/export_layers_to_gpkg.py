@@ -59,9 +59,26 @@ GPKG_FILENAME = "rappis_luis_export.gpkg"
 RASTER_SUBDIR = "raster"
 
 # Raster auch exportieren? (MapServer/WMS-Tile-Caches als GeoTIFF)
-# Bei False werden nur Vektor-Layer gesichert. Raster-Export dauert deutlich
-# laenger (tile-by-tile Download).
-EXPORT_RASTER = True
+#
+# ACHTUNG: Per Default AUS.  QGIS 3.40 stuerzt mit access violation ab,
+# wenn ein entfernter MapServer/WMS/XYZ-Provider via QgsRasterFileWriter
+# synchron heruntergeladen wird (Bug in der Renderer-Pipeline beim
+# Single-Band-Color-Renderer fuer Tile-Caches).
+#
+# Vektor-Layer sind davon NICHT betroffen — der wichtige Teil deines
+# Projekts (alle FeatureServer-Layer) wird in jedem Fall sauber ins GPKG
+# geschrieben.  Die meisten Raster-Layer im Projekt (z.B. "Naturschutz
+# Komplett (MapServer)") sind ohnehin nur gerenderte Sichten auf die
+# darunter liegenden Vektor-Layer, die als Vektor mitexportiert werden.
+#
+# Wenn du einen einzelnen Raster-Layer brauchst: in QGIS rechts auf den
+# Layer -> Export -> Save As... -> GeoTIFF -> Sachsen-Bbox angeben.
+# Das laeuft im GUI-Worker-Thread und crasht nicht.
+EXPORT_RASTER = False
+
+# Wenn EXPORT_RASTER=True: trotzdem entfernte Provider ueberspringen?
+# True = sicher (nur lokale Raster), False = riskant (Crash-Gefahr).
+SKIP_REMOTE_RASTER = True
 
 # Raster-Aufloesung in Metern pro Pixel (EPSG:25833)
 # 25 m = sehr detailliert aber groß, 50 m = guter Kompromiss, 100 m = klein
@@ -322,6 +339,19 @@ def main():
             elif isinstance(layer, QgsRasterLayer):
                 if not EXPORT_RASTER:
                     logger.log("    SKIP Raster (EXPORT_RASTER=False)")
+                    stats["raster_skip"] += 1
+                    continue
+                provider_name = ""
+                try:
+                    provider_name = layer.dataProvider().name().lower()
+                except Exception:
+                    pass
+                remote_providers = {"wms", "wmts", "arcgismapserver", "xyz", "wcs"}
+                if SKIP_REMOTE_RASTER and provider_name in remote_providers:
+                    logger.log(
+                        f"    SKIP Raster (entfernter Provider '{provider_name}',"
+                        f" Crash-Gefahr; SKIP_REMOTE_RASTER=True)"
+                    )
                     stats["raster_skip"] += 1
                     continue
                 out_tif = raster_dir / f"{base}.tif"
